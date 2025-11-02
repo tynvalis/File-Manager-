@@ -2,11 +2,11 @@ import { createInterface } from 'node:readline';
 import { homedir } from 'node:os';
 
 import { up, cd, ls } from './commands/filesystem/nav.js';
-import { cat, add, rn, remove } from './commands/filesystem/basicfs.js';
+import { cat, add, rn, remove, mkdir } from './commands/filesystem/basicfs.js';
 import { cp, mv } from './commands/filesystem/streamOps.js';
 import { getOsInfo } from './commands/os/os.js';
 import { calculateHash } from './commands/hash/hash.js';
-
+import { compress, decompress } from './commands/zip/compression.js';
 const getUsername = () => {
   const key = '--username=';
   const user = process.argv.find((arg) => arg.startsWith(key));
@@ -75,6 +75,18 @@ const runFileManager = async () => {
         break;
       case 'hash':
         if (args.length) await calculateHash(currentPath, args[0]);
+        else console.log('Invalid input');
+        break;
+      case 'mkdir':
+        if (args.length) await mkdir(currentPath, args[0]);
+        else console.log('Invalid input');
+        break;
+      case 'compress':
+        if (args.length > 1) await compress(currentPath, args[0], args[1]);
+        else console.log('Invalid input');
+        break;
+      case 'decompress':
+        if (args.length > 1) await decompress(currentPath, args[0], args[1]);
         else console.log('Invalid input');
         break;
       case '.exit':

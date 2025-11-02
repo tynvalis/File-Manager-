@@ -1,6 +1,7 @@
 import { createReadStream } from 'node:fs';
 import { writeFile, rename, rm } from 'node:fs/promises';
 import { resolve as resolvePath, join } from 'node:path';
+import { mkdir as makeDirectory } from 'node:fs/promises';
 
 export const cat = async (currentPath, filePath) => {
     const fullPath = resolvePath(currentPath, filePath);
@@ -31,6 +32,25 @@ export const rn = async (currentPath, oldFile, newFile) => {
         console.log('Operation failed');
     }
 };
+
+
+
+
+export const mkdir = async (currentPath, dirName) => {
+    try {
+
+        const newDirectoryPath = resolvePath(currentPath, dirName);
+
+       
+        await makeDirectory(newDirectoryPath, { recursive: true });
+
+        console.log(`Directory created successfully: ${newDirectoryPath}`);
+    } catch (error) {
+      
+        console.log('Operation failed', error.message);
+    }
+};
+
 
 export const remove = async (currentPath, file) => {
     try {
