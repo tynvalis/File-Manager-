@@ -1,5 +1,11 @@
 
+
 # File Manager CLI
+
+1.  **Download the project files** or clone the repository to your local machine.
+2.  **Open your terminal** and navigate to the project's root directory.
+3.  **No installation needed!** Since this project has no external dependencies, you do not need to run `npm install`.
+4.  **Start the application** by running the following command. Be sure to replace `your_username` with a name of your choice.
 
     ```bash
     npm run start -- --username=your_username
