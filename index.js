@@ -5,12 +5,13 @@ import { up, cd, ls } from './commands/filesystem/nav.js';
 import { cat, add, rn, remove } from './commands/filesystem/basicfs.js';
 import { cp, mv } from './commands/filesystem/streamOps.js';
 import { getOsInfo } from './commands/os/os.js';
+import { calculateHash } from './commands/hash/hash.js';
 
 const getUsername = () => {
   const key = '--username=';
   const user = process.argv.find((arg) => arg.startsWith(key));
   if (!user) {
-    console.error('Error: Please provide --username argument!');
+    console.error('Error: Please provide --username=<your_username>');
     process.exit(1);
   }
   return user.slice(key.length);
@@ -70,6 +71,10 @@ const runFileManager = async () => {
         break;
       case 'os':
         if (args.length) getOsInfo(args[0]);
+        else console.log('Invalid input');
+        break;
+      case 'hash':
+        if (args.length) await calculateHash(currentPath, args[0]);
         else console.log('Invalid input');
         break;
       case '.exit':
