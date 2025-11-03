@@ -1,0 +1,109 @@
+import { createInterface } from 'node:readline';
+import { homedir } from 'node:os';
+
+import { up, cd, ls } from './commands/filesystem/nav.js';
+import { cat, add, rn, remove, mkdir } from './commands/filesystem/basicfs.js';
+import { cp, mv } from './commands/filesystem/streamOps.js';
+import { getOsInfo } from './commands/os/os.js';
+import { calculateHash } from './commands/hash/hash.js';
+import { compress, decompress } from './commands/zip/compression.js';
+const getUsername = () => {
+  const key = '--username=';
+  const user = process.argv.find((arg) => arg.startsWith(key));
+  if (!user) {
+    console.error('Error: Please provide --username=<your_username>');
+    process.exit(1);
+  }
+  return user.slice(key.length);
+};
+
+const runFileManager = async () => {
+  const username = getUsername();
+  let currentPath = homedir();
+
+  console.log(`Welcome to the File Manager, ${username}!`);
+
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: `You are currently in ${currentPath}\n> `,
+  });
+
+  rl.prompt();
+
+  rl.on('line', async (line) => {
+    const [command, ...args] = line.trim().split(' ');
+
+    switch (command) {
+      case 'up':
+        currentPath = up(currentPath);
+        break;
+      case 'cd':
+        if (args.length) currentPath = await cd(currentPath, args[0]);
+        else console.log('Invalid input');
+        break;
+      case 'ls':
+        await ls(currentPath);
+        break;
+      case 'cat':
+        if (args.length) await cat(currentPath, args[0]);
+        else console.log('Invalid input');
+        break;
+      case 'add':
+        if (args.length) await add(currentPath, args[0]);
+        else console.log('Invalid input');
+        break;
+      case 'rn':
+        if (args.length > 1) await rn(currentPath, args[0], args[1]);
+        else console.log('Invalid input');
+        break;
+      case 'rm':
+        if (args.length) await remove(currentPath, args[0]);
+        else console.log('Invalid input');
+        break;
+      case 'cp':
+        if (args.length > 1) await cp(currentPath, args[0], args[1]);
+        else console.log('Invalid input');
+        break;
+      case 'mv':
+        if (args.length > 1) await mv(currentPath, args[0], args[1]);
+        else console.log('Invalid input');
+        break;
+      case 'os':
+        if (args.length) getOsInfo(args[0]);
+        else console.log('Invalid input');
+        break;
+      case 'hash':
+        if (args.length) await calculateHash(currentPath, args[0]);
+        else console.log('Invalid input');
+        break;
+      case 'mkdir':
+        if (args.length) await mkdir(currentPath, args[0]);
+        else console.log('Invalid input');
+        break;
+      case 'compress':
+        if (args.length > 1) await compress(currentPath, args[0], args[1]);
+        else console.log('Invalid input');
+        break;
+      case 'decompress':
+        if (args.length > 1) await decompress(currentPath, args[0], args[1]);
+        else console.log('Invalid input');
+        break;
+      case '.exit':
+        rl.close();
+        return;
+      default:
+        console.log('Invalid input');
+    }
+
+    rl.setPrompt(`You are currently in ${currentPath}\n> `);
+    rl.prompt();
+  });
+
+  rl.on('close', () => {
+    console.log(`\nThank you for using File Manager, ${username}, goodbye!`);
+    process.exit(0);
+  });
+};
+
+runFileManager();
